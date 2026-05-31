@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Vectify</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">VECTIFY_</div>
+        <div class="navbar-menu">
+            <span id="nav-username">User</span>
+            <span id="nav-tier" class="badge">FREE</span>
+            
+            <button class="btn-theme" onclick="toggleTheme()" title="Ganti Tema">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            
+            <button class="btn-danger" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Buat Akun Baru</h2>
+        <input type="text" id="reg-user" placeholder="USERNAME">
+        <input type="password" id="reg-pass" placeholder="PASSWORD">
+        <button onclick="register()">REGISTER</button>
+        <p class="text-center">Sudah punya akun? <a href="/login.html">Login di sini</a></p>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        protectRoute(false); // Blokir jika sudah login
+
+        async function register() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showAlert('Registrasi berhasil! Silakan login.');
+                window.location.href = '/login.html';
+            } else {
+                showAlert(data.message);
+            }
+        }
+    </script>
+</body>
+</html>

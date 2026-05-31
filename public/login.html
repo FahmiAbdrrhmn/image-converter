@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Vectify</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">VECTIFY_</div>
+        <div class="navbar-menu">
+            <span id="nav-username">User</span>
+            <span id="nav-tier" class="badge">FREE</span>
+            
+            <button class="btn-theme" onclick="toggleTheme()" title="Ganti Tema">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            
+            <button class="btn-danger" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>LOGIN</h2>
+        <input type="text" id="login-user" placeholder="USERNAME">
+        <input type="password" id="login-pass" placeholder="PASSWORD">
+        <button onclick="login()">LOGIN</button>
+        <p class="text-center">Belum punya akun? <a href="/register.html">Daftar di sini</a></p>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        protectRoute(false); // Blokir jika sudah login
+
+        async function login() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem('token', data.data.token);
+                window.location.href = '/index.html'; // Pindah ke dashboard
+            } else {
+                showAlert(data.message);
+            }
+        }
+    </script>
+</body>
+</html>

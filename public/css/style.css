@@ -1,0 +1,338 @@
+/* Import Font Modern 'Inter' dari Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Variabel Tema */
+:root {
+    /* Tema Putih Bersih & Elegan (Default) */
+    --bg-color: #F8FAFC; /* Abu-abu sangat terang untuk latar */
+    --container-bg: #FFFFFF;
+    --text-color: #0F172A;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+    --nav-bg: #FFFFFF;
+    --primary-btn: #0F172A;
+    --primary-btn-text: #FFFFFF;
+    --primary-hover: #334155;
+    --accent: #2563EB; /* Biru Profesional */
+    --border-radius: 16px;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    --input-bg: #F1F5F9;
+}
+
+body.dark-theme {
+    /* Tema Hitam Neon Elegan */
+    --bg-color: #09090B;
+    --container-bg: #18181B;
+    --text-color: #00FFCC; /* Neon Cyan */
+    --text-muted: #A1A1AA;
+    --border-color: rgba(0, 255, 204, 0.2);
+    --nav-bg: rgba(24, 24, 27, 0.8);
+    --primary-btn: #FF007F; /* Neon Magenta */
+    --primary-btn-text: #FFFFFF;
+    --primary-hover: #E60073;
+    --accent: #00FFCC;
+    --shadow: 0 10px 30px rgba(0, 255, 204, 0.05), inset 0 0 10px rgba(0, 255, 204, 0.02);
+    --input-bg: #09090B;
+}
+
+/* Reset & Base */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--nav-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand { 
+    font-size: 22px; 
+    font-weight: 800; 
+    letter-spacing: -0.5px;
+}
+
+.navbar-menu { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+}
+
+.badge {
+    padding: 4px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 99px; /* Bentuk pil / kapsul */
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-color: var(--input-bg);
+}
+.badge.pro { 
+    background-color: var(--accent); 
+    color: var(--container-bg); 
+    border: none;
+}
+
+/* Layout & Komponen Container */
+.container {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    background-color: var(--container-bg);
+    transition: all 0.3s ease;
+}
+
+h2 { 
+    text-align: center; 
+    margin-top: 0;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+p.text-center {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Input Fields */
+input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+body.dark-theme input:focus {
+    box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.1);
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--primary-btn);
+    color: var(--primary-btn-text);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+}
+button:hover { 
+    background-color: var(--primary-hover); 
+}
+button:active {
+    transform: scale(0.98);
+}
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Styling Khusus Nama User */
+#nav-username {
+    color: var(--accent);      /* Menggunakan warna biru/cyan sesuai tema */
+    font-size: 16px;           /* Ukuran sedikit lebih besar */
+    font-weight: 700;          /* Ditebalkan */
+    letter-spacing: 0.5px;
+}
+
+/* Styling Tombol Tema (Jadi Ikon Lingkaran) */
+.btn-theme { 
+    background: transparent; 
+    color: var(--text-muted); 
+    width: 38px; 
+    height: 38px; 
+    margin: 0; 
+    padding: 0; 
+    border: 1px solid transparent;
+    border-radius: 50%; /* Membuat hover efek lingkaran sempurna */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-theme:hover { 
+    background: var(--input-bg); 
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.btn-danger { 
+    background-color: #EF4444; 
+    color: #FFF; 
+    width: auto; 
+    padding: 8px 16px; 
+    margin: 0; 
+    border-radius: 8px;
+    font-size: 13px;
+}
+.btn-danger:hover { background-color: #DC2626; }
+
+a { 
+    color: var(--accent); 
+    font-weight: 600; 
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* File Upload Area */
+.file-area { 
+    border: 2px dashed var(--border-color); 
+    border-radius: 12px;
+    padding: 40px 20px; 
+    text-align: center; 
+    margin-bottom: 25px; 
+    background-color: var(--input-bg);
+    transition: border-color 0.3s;
+}
+.file-area:hover {
+    border-color: var(--accent);
+}
+
+/* SVG Result Container */
+#svg-container { 
+    background-color: var(--input-bg);
+    border-radius: 12px;
+    padding: 20px; 
+    text-align: center; 
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+}
+#svg-container svg { 
+    max-width: 100%; 
+    height: auto; 
+    border-radius: 8px;
+}
+/* Logika Penampilan Ikon Tema */
+
+/* Mode Default (Cerah): Tampilkan Matahari, Sembunyikan Bulan */
+body:not(.dark-theme) .icon-sun { display: block; }
+body:not(.dark-theme) .icon-moon { display: none; }
+
+/* Mode Gelap: Tampilkan Bulan, Sembunyikan Matahari */
+body.dark-theme .icon-sun { display: none; }
+body.dark-theme .icon-moon { display: block; }
+
+/* =========================================
+   CUSTOM MODAL / POP-UP 
+========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: var(--container-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active .modal-box {
+    transform: translateY(0);
+}
+
+.modal-title {
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.modal-text {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.modal-actions button {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+/* =========================================
+   SPLASH SCREEN & TRANSISI GSAP
+========================================= */
+.splash-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-color);
+    z-index: 999999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.splash-logo {
+    display: flex;
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--text-color);
+    letter-spacing: -2px;
+    overflow: hidden; /* Penting agar teks bisa muncul dari bawah (masking) */
+}
+
+.splash-char {
+    transform: translateY(100%); /* Posisi awal disembunyikan di bawah */
+    display: inline-block;
+}

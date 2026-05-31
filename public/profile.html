@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil | Vectify</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand"><a href="/index.html" style="color: inherit; text-decoration: none;">VECTIFY_</a></div>
+        <div class="navbar-menu">
+            <span id="nav-username">User</span>
+            <span id="nav-tier" class="badge">FREE</span>
+            
+            <button class="btn-theme" onclick="toggleTheme()" title="Ganti Tema">
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button class="btn-danger" onclick="logout()">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Pengaturan Profil</h2>
+        <p class="text-center">Kelola informasi akun Anda di sini.</p>
+
+        <div style="margin-top: 30px;">
+            <label for="update-username" style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Ganti Username</label>
+            <input type="text" id="update-username" placeholder="Masukkan username baru">
+            <button onclick="updateUsername()" id="btn-update">SIMPAN PERUBAHAN</button>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
+            <h3 style="color: #EF4444; margin-top: 0; font-size: 16px;">Zona Berbahaya</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                Tindakan ini akan menghapus akun Anda secara permanen beserta sisa kuota yang ada. Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <button onclick="deleteAccount()" style="background-color: transparent; color: #EF4444; border: 1px solid #EF4444;">HAPUS AKUN PERMANEN</button>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        protectRoute(true); // Lempar ke login jika tidak ada token
+        const token = localStorage.getItem('token');
+
+        // 1. Ambil Data Profil Saat Halaman Dimuat
+        window.onload = async () => {
+            try {
+                const res = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const user = data.data;
+                    document.getElementById('nav-username').textContent = user.username;
+                    document.getElementById('nav-tier').textContent = user.tier;
+                    document.getElementById('update-username').value = user.username; // Isi otomatis input dengan nama saat ini
+
+                    if (user.tier === 'pro') {
+                        document.getElementById('nav-tier').classList.add('pro');
+                    }
+                } else {
+                    logout();
+                }
+            } catch (e) {
+                showAlert('Gagal mengambil profil');
+            }
+        };
+
+        // 2. Fungsi Eksekusi Ganti Nama (PUT)
+        async function updateUsername() {
+            const newName = document.getElementById('update-username').value.trim();
+            if (!newName) return showAlert('Username baru tidak boleh kosong!');
+
+            const btn = document.getElementById('btn-update');
+            btn.textContent = 'MENYIMPAN...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ newUsername: newName })
+                });
+
+                const data = await res.json();
+                
+                if (res.ok && data.success) {
+                    showAlert('Username berhasil diperbarui!');
+                    document.getElementById('nav-username').textContent = data.data.username;
+                } else {
+                    showAlert(data.message);
+                }
+            } catch (e) {
+                showAlert('Gagal menghubungi server');
+            } finally {
+                btn.textContent = 'SIMPAN PERUBAHAN';
+                btn.disabled = false;
+            }
+        }
+
+        // 3. Fungsi Eksekusi Hapus Akun (DELETE)
+        function deleteAccount() {
+            showConfirm(
+                'Hapus Akun Permanen', 
+                'Tindakan ini akan menghapus data Anda dan sisa kuota yang ada. Aksi ini tidak dapat dibatalkan.', 
+                async () => {
+                    try {
+                        const res = await fetch('/api/profile', {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok && data.success) {
+                            // Gunakan alert bawaan JS khusus di sini karena kita butuh user diarahkan keluar seketika
+                            alert('Akun berhasil dihapus. Selamat tinggal!');
+                            logout(); 
+                        } else {
+                            showAlert(data.message);
+                        }
+                    } catch (e) {
+                        showAlert('Gagal menghubungi server');
+                    }
+                }
+            );
+        }
+    </script>
+</body>
+</html>
