@@ -18,7 +18,7 @@ Aplikasi full-stack untuk mengonversi gambar bitmap (JPG/PNG) menjadi vektor (SV
    DB_USER=root
    DB_PASSWORD=
    DB_NAME=converter_db
-   JWT_SECRET=rahasia_super_aman_123
+   JWT_SECRET=rahasia
    ```
    *(Kosongkan `DB_PASSWORD` jika menggunakan XAMPP/Laragon bawaan).*
 
