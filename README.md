@@ -35,9 +35,6 @@ Aplikasi full-stack untuk mengonversi gambar bitmap (JPG/PNG) menjadi vektor (SV
 Buka console MySQL atau phpMyAdmin, lalu eksekusi query berikut untuk menyiapkan struktur database:
 
 ```sql
-CREATE DATABASE converter_db;
-USE converter_db;
-
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -45,6 +42,27 @@ CREATE TABLE users (
     tier ENUM('free', 'pro') DEFAULT 'free',
     quota INT DEFAULT 5,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+'''
+'''sql
+CREATE TABLE conversions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    file_size_kb INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+'''
+'''sql
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'Simulasi',
+    status ENUM('pending', 'success', 'failed') DEFAULT 'success',
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 ```
 
