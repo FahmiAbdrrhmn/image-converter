@@ -50,6 +50,37 @@ users
 - **`upgrade_logs`** — dicatat otomatis setiap kali `/api/upgrade` berhasil dijalankan.
 - Kedua tabel menggunakan `ON DELETE CASCADE`, sehingga data terhapus otomatis saat akun dihapus.
 
+```sql
+-- 1. Tabel users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    tier ENUM('free', 'pro') DEFAULT 'free',
+    quota INT DEFAULT 5,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Tabel conversion_history
+CREATE TABLE conversion_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    file_size INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'success',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- 3. Tabel upgrade_logs
+CREATE TABLE upgrade_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    method VARCHAR(50) NOT NULL,
+    upgraded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
 ---
 
 ## 3. Endpoint REST API
