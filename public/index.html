@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Konverter — Vectify</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">VECTIFY<span>_</span></span>
+    <div class="navbar-menu">
+      <a href="/profile.html" id="nav-username" class="nav-user-link">User</a>
+      <span id="nav-tier" class="badge">FREE</span>
+
+      <button class="btn-theme" onclick="toggleTheme()" title="Ganti tema">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <button class="btn-logout" onclick="logout()">Keluar</button>
+    </div>
+  </nav>
+
+  <div class="page anim-target">
+
+    <div class="anim-target">
+      <h1 class="page-title">Konversi PNG ke SVG</h1>
+      <p class="page-sub">Upload gambar PNG atau JPG, konversi ke format vektor SVG dalam hitungan detik.</p>
+    </div>
+
+    <div class="upgrade-banner anim-target" id="upgrade-banner" style="display:none;">
+      <div class="upgrade-text">
+        Upgrade ke PRO
+        <span>Konversi unlimited tanpa batas kuota</span>
+      </div>
+      <button class="btn-upgrade" onclick="doUpgrade()">Upgrade →</button>
+    </div>
+
+    <!-- Main card -->
+    <div class="card anim-target">
+
+      <!-- Quota -->
+      <div class="quota-bar">
+        <span class="quota-label">Sisa Kuota Konversi</span>
+        <span class="quota-value" id="quota-display">—</span>
+      </div>
+
+      <!-- Drop zone -->
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('imageInput').click()">
+        <input type="file" id="imageInput" accept="image/png,image/jpeg" onchange="onFileChange(this)" style="display:none;">
+        <div class="upload-icon">📁</div>
+        <div class="upload-title">Seret file ke sini, atau <span>klik untuk pilih</span></div>
+        <div class="upload-sub">Mendukung PNG dan JPG · Maks 10 MB</div>
+      </div>
+
+      <!-- File selected indicator -->
+      <div class="file-selected" id="file-info" style="display:none;">
+        <span>✓</span>
+        <span class="file-selected-name" id="file-name">—</span>
+        <button class="file-clear" onclick="clearFile()" title="Hapus file">✕</button>
+      </div>
+
+      <!-- Convert button -->
+      <button class="btn btn-primary" id="btn-convert" onclick="doConvert()" disabled>
+        <span id="convert-text">Konversi Sekarang</span>
+      </button>
+
+    </div>
+
+    <!-- Result -->
+    <div class="result-box anim-target" id="result-area" style="display:none;">
+      <div class="result-header">
+        <span class="result-header-label">
+          <span class="result-dot"></span>
+          Hasil Konversi
+        </span>
+        <span class="text-muted" id="result-meta">—</span>
+      </div>
+      <div class="result-body" id="svg-container"></div>
+      <button class="btn-download" onclick="doDownload()">
+        ↓ &nbsp;Unduh SVG
+      </button>
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    protectRoute(true);
+
+    const token = localStorage.getItem('token');
+
+    /* ── Drag & drop ─────────────────────────────────────── */
+    const dropArea = document.getElementById('upload-area');
+    dropArea.addEventListener('dragover',  e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+    dropArea.addEventListener('dragleave', ()  => dropArea.classList.remove('drag-over'));
+    dropArea.addEventListener('drop', e => {
+      e.preventDefault(); dropArea.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f) setFile(f);
+    });
+
+    function onFileChange(input) {
+      if (input.files[0]) setFile(input.files[0]);
+    }
+
+    function setFile(file) {
+      document.getElementById('file-name').textContent     = file.name;
+      document.getElementById('file-info').style.display   = 'flex';
+      document.getElementById('btn-convert').disabled      = false;
+      document.getElementById('result-area').style.display = 'none';
+      // Sync to actual input
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById('imageInput').files = dt.files;
+    }
+
+    function clearFile() {
+      document.getElementById('imageInput').value          = '';
+      document.getElementById('file-info').style.display   = 'none';
+      document.getElementById('btn-convert').disabled      = true;
+      document.getElementById('result-area').style.display = 'none';
+    }
+
+    async function loadProfile() {
+      try {
+        const res  = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (!data.success) { logout(); return; }
+
+        const u = data.data;
+        document.getElementById('nav-username').textContent = u.username;
+        document.getElementById('nav-tier').textContent     = u.tier.toUpperCase();
+
+        const isPro = u.tier === 'pro';
+        document.getElementById('nav-tier').classList.toggle('pro', isPro);
+        document.getElementById('quota-display').textContent      = isPro ? 'UNLIMITED' : u.quota;
+        document.getElementById('quota-display').classList.toggle('unlimited', isPro);
+        document.getElementById('upgrade-banner').style.display   = isPro ? 'none' : 'flex';
+      } catch { /* ignore */ }
+    }
+
+    window.onload = loadProfile;
+
+    async function doConvert() {
+      const file = document.getElementById('imageInput').files[0];
+      if (!file) return;
+
+      const btn  = document.getElementById('btn-convert');
+      const text = document.getElementById('convert-text');
+      btn.disabled  = true;
+      text.innerHTML = '<div class="spin"></div> Memproses...';
+
+      const fd = new FormData();
+      fd.append('image', file);
+
+      try {
+        const res = await fetch('/api/convert', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: fd
+        });
+
+        if (res.ok) {
+          const svg = await res.text();
+          document.getElementById('svg-container').innerHTML       = svg;
+          document.getElementById('result-area').style.display     = '';
+          document.getElementById('result-meta').textContent       = file.name.replace(/\.[^.]+$/, '.svg');
+
+          gsap.from('#result-area', { y: 16, opacity: 0, duration: 0.4, ease: 'power3.out' });
+          loadProfile();
+        } else {
+          const err = await res.json();
+          showAlert(err.message || 'Konversi gagal.');
+        }
+      } catch {
+        showAlert('Tidak dapat menghubungi server.');
+      } finally {
+        btn.disabled   = false;
+        text.textContent = 'Konversi Sekarang';
+      }
+    }
+
+    function doDownload() {
+      const svg  = document.getElementById('svg-container').innerHTML;
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url  = URL.createObjectURL(blob);
+      const a    = Object.assign(document.createElement('a'), { href: url, download: `Vectify_${Date.now()}.svg` });
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function doUpgrade() {
+      showConfirm('Upgrade ke PRO', 'Simulasi: Konfirmasi upgrade ke paket PRO seumur hidup?', async () => {
+        const res  = await fetch('/api/upgrade', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (data.success) { showAlert('Selamat! Akun Anda kini PRO.', 'Upgrade Berhasil'); loadProfile(); }
+      });
+    }
+  </script>
+</body>
+</html>
