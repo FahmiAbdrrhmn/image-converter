@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
+const db = require('../config/db'); // Pastikan db di-import untuk query transaksi
 
 exports.register = async (req, res) => {
     try {
@@ -44,20 +45,28 @@ exports.login = async (req, res) => {
 // Endpoint untuk mengambil data profil terbaru (termasuk kuota)
 exports.getProfile = async (req, res) => {
     try {
-        const [rows] = await require('../config/db').query('SELECT id, username, tier, quota FROM users WHERE id = ?', [req.user.id]);
-        return require('../utils/responseHandler').successResponse(res, 200, 'Profil ditemukan', rows[0]);
+        const [rows] = await db.query('SELECT id, username, tier, quota FROM users WHERE id = ?', [req.user.id]);
+        return successResponse(res, 200, 'Profil ditemukan', rows[0]);
     } catch (error) {
-        return require('../utils/responseHandler').errorResponse(res, 500, 'Gagal mengambil profil');
+        return errorResponse(res, 500, 'Gagal mengambil profil');
     }
 };
 
 // Endpoint untuk simulasi Upgrade ke PRO (Sekali Bayar)
 exports.upgradeToPro = async (req, res) => {
     try {
-        await require('../config/db').query("UPDATE users SET tier = 'pro', quota = 999999 WHERE id = ?", [req.user.id]);
-        return require('../utils/responseHandler').successResponse(res, 200, 'Berhasil upgrade ke akun PRO (Lifetime)');
+        // 1. Update status akun pengguna menjadi PRO
+        await db.query("UPDATE users SET tier = 'pro', quota = 999999 WHERE id = ?", [req.user.id]);
+        
+        // 2. TAMBAHAN: Catat data transaksi pembayaran ke tabel 'transactions'
+        await db.query(
+            "INSERT INTO transactions (user_id, amount, payment_method, status) VALUES (?, ?, ?, ?)", 
+            [req.user.id, 50000.00, 'Simulasi', 'success']
+        );
+
+        return successResponse(res, 200, 'Berhasil upgrade ke akun PRO (Lifetime)');
     } catch (error) {
-        return require('../utils/responseHandler').errorResponse(res, 500, 'Gagal upgrade');
+        return errorResponse(res, 500, 'Gagal upgrade');
     }
 };
 
@@ -67,21 +76,21 @@ exports.updateProfile = async (req, res) => {
         const { newUsername } = req.body;
         
         if (!newUsername) {
-            return require('../utils/responseHandler').errorResponse(res, 400, 'Username baru tidak boleh kosong');
+            return errorResponse(res, 400, 'Username baru tidak boleh kosong');
         }
 
         // Cek apakah username baru sudah dipakai oleh orang lain
-        const [existing] = await require('../config/db').query('SELECT id FROM users WHERE username = ?', [newUsername]);
+        const [existing] = await db.query('SELECT id FROM users WHERE username = ?', [newUsername]);
         if (existing.length > 0) {
-            return require('../utils/responseHandler').errorResponse(res, 400, 'Username tersebut sudah digunakan orang lain');
+            return errorResponse(res, 400, 'Username tersebut sudah digunakan orang lain');
         }
 
         // Update username di database
-        await require('../config/db').query('UPDATE users SET username = ? WHERE id = ?', [newUsername, req.user.id]);
+        await db.query('UPDATE users SET username = ? WHERE id = ?', [newUsername, req.user.id]);
         
-        return require('../utils/responseHandler').successResponse(res, 200, 'Username berhasil diperbarui', { username: newUsername });
+        return successResponse(res, 200, 'Username berhasil diperbarui', { username: newUsername });
     } catch (error) {
-        return require('../utils/responseHandler').errorResponse(res, 500, 'Gagal memperbarui profil');
+        return errorResponse(res, 500, 'Gagal memperbarui profil');
     }
 };
 
@@ -89,10 +98,11 @@ exports.updateProfile = async (req, res) => {
 exports.deleteProfile = async (req, res) => {
     try {
         // Hapus baris user berdasarkan ID yang ada di token JWT
-        await require('../config/db').query('DELETE FROM users WHERE id = ?', [req.user.id]);
+        // (Karena relasi ON DELETE CASCADE, tabel conversions & transactions milik user ini otomatis terhapus)
+        await db.query('DELETE FROM users WHERE id = ?', [req.user.id]);
         
-        return require('../utils/responseHandler').successResponse(res, 200, 'Akun Anda berhasil dihapus secara permanen');
+        return successResponse(res, 200, 'Akun Anda berhasil dihapus secara permanen');
     } catch (error) {
-        return require('../utils/responseHandler').errorResponse(res, 500, 'Gagal menghapus akun');
+        return errorResponse(res, 500, 'Gagal menghapus akun');
     }
 };

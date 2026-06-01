@@ -59,6 +59,12 @@ exports.convertImage = async (req, res) => {
             await db.query('UPDATE users SET quota = quota - 1 WHERE id = ?', [req.user.id]);
         }
 
+        // TAMBAHAN: Catat riwayat konversi ke tabel 'conversions'
+        await db.query(
+            'INSERT INTO conversions (user_id, original_filename, file_size_kb) VALUES (?, ?, ?)', 
+            [req.user.id, req.file.originalname, Math.round(fileSize / 1024)]
+        );
+
         // 8. Kembalikan response SVG
         res.set('Content-Type', 'image/svg+xml');
         res.send(svgString);
