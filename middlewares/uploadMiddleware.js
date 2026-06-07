@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-// Gunakan MemoryStorage agar gambar disimpan sementara di RAM (Buffer)
+// Gambar disimpan sementara di RAM (Buffer)
 const storage = multer.memoryStorage();
 
 const upload = multer({ 

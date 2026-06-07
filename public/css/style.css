@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 
-/* ── Variables ─────────────────────────────────────────── */
 :root {
-  /* Light Theme (CloudConvert-inspired) */
   --bg:           #F0F4FA;
   --surface:      #FFFFFF;
   --surface-2:    #F7F9FC;
