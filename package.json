@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Aplikasi full-stack untuk mengonversi gambar bitmap (JPG/PNG) menjadi vektor (SVG) dengan sistem autentikasi, tier langganan, riwayat konversi, dan log upgrade.",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
