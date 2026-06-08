@@ -4,6 +4,11 @@ Aplikasi full-stack untuk mengonversi gambar bitmap (JPG/PNG) menjadi vektor (SV
 
 ---
 
+## Anggota Kelompok
+1. 5230411315 Ersa Dwi Marwansa
+2. 5230411317 Hanafi Nur Ar Rasyid
+3. 5230411318 Fahmi Abdurrahman
+
 ## 1. Langkah Instalasi
 
 1. **Instal dependensi:**
