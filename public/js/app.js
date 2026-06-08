@@ -12,7 +12,7 @@ function toggleTheme() {
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 
-/* ── Entrance animation (GSAP) ─────────────────────────── */
+/* ── Entrance animation (GSAP) ─── */
 function runEntranceAnimation() {
   const hasSeen = sessionStorage.getItem('splashSeen');
 
@@ -49,7 +49,7 @@ function runEntranceAnimation() {
   }
 }
 
-/* ── Modal ─────────────────────────────────────────────── */
+/* ── Modal ─── */
 function createModal() {
   if (document.getElementById('_modal')) return;
   const el = document.createElement('div');
@@ -90,14 +90,14 @@ function _execConfirm() {
   if (window._confirmCb) { window._confirmCb(); window._confirmCb = null; }
 }
 
-/* ── Auth guard ────────────────────────────────────────── */
+/* ── Auth guard ─── */
 function protectRoute(requiresAuth) {
   const token = localStorage.getItem('token');
   if (requiresAuth && !token) window.location.href = '/login.html';
   if (!requiresAuth && token) window.location.href = '/index.html';
 }
 
-/* ── Logout ────────────────────────────────────────────── */
+/* ── Logout ──*/
 function logout() {
   showConfirm('Keluar', 'Apakah Anda yakin ingin mengakhiri sesi ini?', () => {
     gsap.to('.navbar, .anim-target', {
